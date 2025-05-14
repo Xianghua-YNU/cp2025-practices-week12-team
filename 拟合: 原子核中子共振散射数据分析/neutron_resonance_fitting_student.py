@@ -15,9 +15,7 @@ def breit_wigner(E, Er, Gamma, fr):
     返回:
         float or numpy.ndarray: 共振截面(mb)
     """
-    # TODO: 在此实现Breit-Wigner公式 (约1行代码)
-    # [STUDENT_CODE_HERE]
-    raise NotImplementedError("请在 {} 中实现此函数".format(__file__))
+    return fr / ((E - Er)**2 + Gamma**2 / 4)
 
 def fit_without_errors(energy, cross_section):
     """
@@ -33,13 +31,15 @@ def fit_without_errors(energy, cross_section):
             - pcov (2D array): 参数的协方差矩阵
     """
     # 初始猜测值
-    Er_guess = 75.0
+    Er_guess = 75.0  # 从数据看峰值大约在75MeV
     Gamma_guess = 50.0
     fr_guess = 10000.0
     
-    # TODO: 使用curve_fit进行拟合 (约1行代码)
-    # [STUDENT_CODE_HERE]
-    raise NotImplementedError("请在 {} 中实现此函数".format(__file__))
+    # 进行拟合
+    popt, pcov = curve_fit(breit_wigner, energy, cross_section, 
+                          p0=[Er_guess, Gamma_guess, fr_guess])
+    
+    return popt, pcov
 
 def fit_with_errors(energy, cross_section, errors):
     """
@@ -60,9 +60,12 @@ def fit_with_errors(energy, cross_section, errors):
     Gamma_guess = 50.0
     fr_guess = 10000.0
     
-    # TODO: 使用curve_fit进行拟合，考虑误差 (约1行代码)
-    # [STUDENT_CODE_HERE]
-    raise NotImplementedError("请在 {} 中实现此函数".format(__file__))
+    # 进行拟合，考虑误差
+    popt, pcov = curve_fit(breit_wigner, energy, cross_section, 
+                          p0=[Er_guess, Gamma_guess, fr_guess],
+                          sigma=errors,absolute_sigma=True)
+    
+    return popt, pcov
 
 def plot_fit_results(energy, cross_section, errors, popt, pcov, title):
     """
@@ -91,10 +94,12 @@ def plot_fit_results(energy, cross_section, errors, popt, pcov, title):
     
     # 添加参数信息
     Er, Gamma, fr = popt
+    # 计算标准误差(协方差矩阵对角线元素的平方根)
     Er_std = np.sqrt(pcov[0, 0])
     Gamma_std = np.sqrt(pcov[1, 1])
     fr_std = np.sqrt(pcov[2, 2])
     
+    # 计算95%置信区间(1.96倍标准误差)
     plt.text(0.05, 0.95, 
              f'$E_r$ = {Er:.1f} ± {1.96*Er_std:.1f} MeV (95% CI)\n'
              f'$\Gamma$ = {Gamma:.1f} ± {1.96*Gamma_std:.1f} MeV (95% CI)\n'
@@ -103,6 +108,7 @@ def plot_fit_results(energy, cross_section, errors, popt, pcov, title):
              verticalalignment='top',
              bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
     
+    # 添加图表元素
     plt.xlabel('Energy (MeV)')
     plt.ylabel('Cross Section (mb)')
     plt.title(title)
@@ -128,6 +134,7 @@ def main():
     fig2 = plot_fit_results(energy, cross_section, errors, popt2, pcov2,
                           'Breit-Wigner Fit (With Errors)')
     
+    # 显示图表
     plt.show()
     
     # 任务3：结果比较
