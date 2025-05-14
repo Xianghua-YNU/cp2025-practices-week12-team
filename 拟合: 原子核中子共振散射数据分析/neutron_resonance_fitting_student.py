@@ -35,9 +35,7 @@ def fit_without_errors(energy, cross_section):
     Gamma_guess = 50.0
     fr_guess = 10000.0
     
-    # 进行拟合
-    popt, pcov = curve_fit(breit_wigner, energy, cross_section, 
-                          p0=[Er_guess, Gamma_guess, fr_guess])
+    popt, pcov = curve_fit(breit_wigner, energy, cross_section, p0=[Er_guess, Gamma_guess, fr_guess])
     
     return popt, pcov
 
@@ -59,11 +57,7 @@ def fit_with_errors(energy, cross_section, errors):
     Er_guess = 75.0
     Gamma_guess = 50.0
     fr_guess = 10000.0
-    
-    # 进行拟合，考虑误差
-    popt, pcov = curve_fit(breit_wigner, energy, cross_section, 
-                          p0=[Er_guess, Gamma_guess, fr_guess],
-                          sigma=errors,absolute_sigma=True)
+    popt, pcov = curve_fit(breit_wigner, energy, cross_section, p0=[Er_guess, Gamma_guess, fr_guess],sigma=errors,absolute_sigma=True)
     
     return popt, pcov
 
